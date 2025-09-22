@@ -155,6 +155,8 @@ export interface Filters {
 }
 
 export interface MarketingData {
+  weekly_stats: MarketingData | null;
+  regional_performance: any;
   message: string;
   company_info: CompanyInfo;
   marketing_stats: MarketingStats;

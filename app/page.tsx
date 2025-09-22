@@ -6,6 +6,8 @@ import { Navbar } from '../src/components/ui/navbar';
 import { CardMetric } from '../src/components/ui/card-metric';
 import { Footer } from '../src/components/ui/footer';
 import { Target, DollarSign, TrendingUp, Users, Calendar, Clock, ShoppingBag, MapPin } from 'lucide-react';
+import CustomLineChart from '../src/components/ui/line-chart';
+import { BubbleMap } from '../src/components/ui/bubble-map';
 
 export default function Home() {
   const [marketingData, setMarketingData] = useState<MarketingData | null>(null);
@@ -156,6 +158,43 @@ export default function Home() {
                   value={marketingData.market_insights.fastest_growing_region}
                   icon={<MapPin className="h-5 w-5" />}
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Weekly View - Line Chart */}
+          {marketingData && marketingData.weekly_stats && (
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-white mb-4">Weekly Revenue & Spend</h2>
+              <div className="bg-gray-800 rounded-lg p-4">
+                <CustomLineChart
+                  data={Array.isArray(marketingData.weekly_stats) ? marketingData.weekly_stats : []}
+                  xKey="week_label"
+                  dataKeys={[
+                    { key: 'revenue', color: '#34d399', name: 'Revenue' },
+                    { key: 'spend', color: '#60a5fa', name: 'Spend' }
+                  ]}
+                  title="Weekly Revenue & Spend"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Regional Performance - Bubble Map */}
+          {marketingData && marketingData.regional_performance && (
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-white mb-4">Regional Campaign Performance</h2>
+              <div className="bg-gray-800 rounded-lg p-4">
+                <BubbleMap
+                  data={marketingData.regional_performance.map((region: { region: string; }) => ({
+                    ...region,
+                    // Example: You must provide coordinates for each region
+                    coordinates: region.region === "Abu Dhabi"
+                      ? [54.3773, 24.4539]
+                      : region.region === "Dubai"
+                        ? [55.2708, 25.2048]
+                        : [0, 0]
+                  }))} title={''}                />
               </div>
             </div>
           )}
