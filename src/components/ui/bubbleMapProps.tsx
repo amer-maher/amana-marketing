@@ -1,4 +1,3 @@
-
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { scaleSqrt } from "d3-scale";
 
