@@ -1,48 +1,66 @@
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
-import { scaleSqrt } from "d3-scale";
+"use client";
+
+import React from "react";
+import {
+  MapContainer,
+  TileLayer,
+  CircleMarker,
+  Tooltip,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+
+interface DataPoint {
+  region: string;
+  country: string;
+  revenue: number;
+  coordinates: [number, number]; // [longitude, latitude]
+}
 
 interface BubbleMapProps {
-  data: {
-    region: string;
-    country: string;
-    revenue: number;
-    coordinates: [number, number]; // [longitude, latitude]
-  }[];
+  data: DataPoint[];
 }
 
-const geoUrl =
-  "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
-
-export function BubbleMap({ data }: BubbleMapProps) {
-  // Scale bubble size by revenue
-  const maxRevenue = Math.max(...data.map(d => d.revenue));
-  const sizeScale = scaleSqrt().domain([0, maxRevenue]).range([5, 40]);
+export const BubbleMap: React.FC<BubbleMapProps> = ({ data }) => {
+  const maxRevenue = Math.max(...data.map((d) => d.revenue));
 
   return (
-    <div style={{ width: "100%", height: 400 }}>
-      <ComposableMap projection="geoMercator">
-        <Geographies geography={geoUrl}>
-          {({ geographies }: { geographies: any[] }) =>
-            geographies.map(geo => (
-              <Geography key={geo.rsmKey} geography={geo} fill="#222" stroke="#444" />
-            ))
-          }
-        </Geographies>
-        {data.map((d, i) => (
-          <Marker key={i} coordinates={d.coordinates}>
-            <circle
-              r={sizeScale(d.revenue)}
-              fill="#34d399"
-              fillOpacity={0.5}
-              stroke="#10b981"
-              strokeWidth={2}
-            />
-            <text textAnchor="middle" y={-sizeScale(d.revenue) - 4} fill="#fff" fontSize={12}>
-              {d.region}
-            </text>
-          </Marker>
-        ))}
-      </ComposableMap>
+    <div style={{ width: "100%", height: "400px" }}>
+      <MapContainer
+        center={[20, 0]} // default center
+        zoom={2}
+        style={{ width: "100%", height: "100%" }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        />
+
+        {data.map((d, i) => {
+          const [lng, lat] = d.coordinates;
+          const radius = (d.revenue / maxRevenue) * 40;
+
+          return (
+            <CircleMarker
+              key={i}
+              center={[lat, lng]} // leaflet expects [lat, lng]
+              radius={radius}
+              pathOptions={{
+                fillColor: "#34d399",
+                fillOpacity: 0.5,
+                color: "#10b981",
+                weight: 2,
+                stroke: true,
+              }}
+            >
+              <Tooltip direction="top" offset={[0, -radius]} opacity={1}>
+                <span>
+                  {d.region} – {d.revenue.toLocaleString()}$
+                </span>
+              </Tooltip>
+            </CircleMarker>
+          );
+        })}
+      </MapContainer>
     </div>
   );
-}
+};
