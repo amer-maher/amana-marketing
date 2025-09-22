@@ -163,13 +163,13 @@ export default function DeviceView() {
             />
             <BarChart
               title="Spend by Device"
-              data={deviceData.map(d => ({ label: d.device, value: d.spend, formatValue: (v) => `$${v.toLocaleString()}` }))}
-              formatValue={(v) => `$${v.toLocaleString()}`}
+              data={deviceData.map(d => ({ label: d.device, value: d.spend }))}
+              formatValue={(v: number) => `$${v.toLocaleString()}`}
             />
             <BarChart
               title="Revenue by Device"
-              data={deviceData.map(d => ({ label: d.device, value: d.revenue, formatValue: (v) => `$${v.toLocaleString()}` }))}
-              formatValue={(v) => `$${v.toLocaleString()}`}
+              data={deviceData.map(d => ({ label: d.device, value: d.revenue }))}
+              formatValue={(v: number) => `$${v.toLocaleString()}`}
             />
             <BarChart
               title="% of Traffic by Device"
